@@ -1,0 +1,32 @@
+server:
+  dataStorage:
+    enabled: true
+  standalone:
+    enabled: true
+  ha:
+    enabled: true
+    replicas: ${replicas}
+    config: |
+      ui = true
+
+      listener "tcp" {
+        tls_disable     = 0
+        tls_cert_file   = "/vault/userconfig/tls/tls_crt"
+        tls_key_file    = "/vault/userconfig/tls/tls_key"
+        address         = "[::]:8200"
+        cluster_address = "[::]:8201"
+      }
+
+      storage "consul" {
+        path = "vault"
+        address = "HOST_IP:8500"
+      }
+  extraVolumes:
+    - type: secret
+      name: tls
+  extraEnvironmentVars:
+    VAULT_ADDR: https://127.0.0.1:8200
+    VAULT_SKIP_VERIFY: true
+ui:
+  enabled: true
+  serviceType: LoadBalancer

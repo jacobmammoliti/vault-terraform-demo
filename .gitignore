@@ -1,0 +1,8 @@
+terraform-vault-configuration/.terraform/
+terraform-vault-configuration/terraform.tfstate
+terraform-vault-deployment/certs/*
+terraform-vault-deployment/.terraform/
+terraform-vault-deployment/main.tfvars
+terraform-vault-deployment/terraform.tfstate
+terraform-vault-deployment/consul-helm
+terraform-vault-deployment/vault-helm
