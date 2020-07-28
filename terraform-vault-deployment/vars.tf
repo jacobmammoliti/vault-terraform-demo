@@ -68,7 +68,7 @@ variable "gcp_kms_project_id" {
 variable "gcp_kms_region" {
   type        = string
   description = "define the GCP KMS region will be deployed into"
-  default     = "us-central1-a"
+  default     = "us-central1"
 }
 
 variable "gcp_kms_key_ring" {
