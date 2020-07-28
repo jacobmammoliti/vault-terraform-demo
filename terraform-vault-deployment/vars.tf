@@ -25,7 +25,9 @@ variable "oauth_scopes" {
   description = "list of oauth scopes kubernetes nodes has"
   default = [
     "https://www.googleapis.com/auth/logging.write",
-    "https://www.googleapis.com/auth/monitoring"
+    "https://www.googleapis.com/auth/monitoring",
+    "https://www.googleapis.com/auth/cloud-platform",
+    "https://www.googleapis.com/auth/cloudkms"
   ]
   type = list
 }
