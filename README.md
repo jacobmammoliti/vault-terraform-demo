@@ -10,12 +10,12 @@ The following snippet shows an example of how this is done.
 ```shell
 $ cd terraform-vault-deployment
 
-terraform-vault-deployment $ cat << EOF > main.tfvars
+terraform-vault-deployment $ cat << EOF > terraform.tfvars
 cluster_name = "vault-cluster"
-project      = <project-id>
+project_id   = <project-id>
 EOF
 
-terraform-vault-deployment $ terraform apply -var-file=main.tfvars
+terraform-vault-deployment $ terraform apply
 data.google_client_config.default: Refreshing state...
 
 An execution plan has been generated and is shown below.

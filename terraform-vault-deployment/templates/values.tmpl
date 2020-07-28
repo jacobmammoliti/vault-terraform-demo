@@ -1,0 +1,33 @@
+server:
+  dataStorage:
+    enabled: true
+  ha:
+    enabled: true
+    replicas: ${replicas}
+    raft:
+      enabled: true
+      config: |
+        ui = ${enable_vault_ui}
+        
+        listener "tcp" {
+          tls_disable     = ${tls_disable}
+          tls_cert_file   = "/vault/userconfig/tls/tls_crt"
+          tls_key_file    = "/vault/userconfig/tls/tls_key"
+          address         = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+        }
+
+        service_registration "kubernetes" {}
+  extraVolumes:
+    - type: secret
+      name: tls
+  extraEnvironmentVars:
+    VAULT_ADDR: https://127.0.0.1:8200
+    VAULT_SKIP_VERIFY: true
+ui:
+  enabled: ${enable_vault_ui}
+  serviceType: ${vault_service_type}
