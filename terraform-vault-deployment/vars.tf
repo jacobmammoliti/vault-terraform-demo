@@ -76,11 +76,11 @@ variable "gcp_kms_region" {
 variable "gcp_kms_key_ring" {
   type        = string
   description = "the name of the GCP KMS key ring"
-  default     = "vault-key-ring"
+  default     = "vault-kr"
 }
 
 variable "gcp_kms_crypto_key" {
   type        = string
   description = "the name of the GCP KMS crypto key"
-  default     = "vault-crypto-key"
+  default     = "vault-ck"
 }
