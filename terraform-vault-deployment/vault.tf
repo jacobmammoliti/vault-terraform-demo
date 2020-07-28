@@ -15,34 +15,13 @@ resource "helm_release" "vault" {
       replicas           = var.initial_node_count,
       enable_vault_ui    = var.enable_vault_ui,
       vault_service_type = var.vault_service_type,
-      tls_disable        = var.vault_tls_disable
+      tls_disable        = var.vault_tls_disable,
+      gcp_kms_project_id = var.gcp_kms_project_id,
+      gcp_kms_region     = var.gcp_kms_region,
+      gcp_kms_key_ring   = google_kms_key_ring.vault_key_ring.self_link,
+      gcp_kms_crypto_key = google_kms_crypto_key.vault_crypto_key.self_link
     })
   ]
-}
-
-resource "tls_private_key" "cert" {
-  algorithm   = "RSA"
-  ecdsa_curve = "P384"
-  rsa_bits    = "2048"
-}
-
-resource "tls_self_signed_cert" "cert" {
-  key_algorithm   = tls_private_key.cert.algorithm
-  private_key_pem = tls_private_key.cert.private_key_pem
-
-  validity_period_hours = 12
-
-  allowed_uses = [
-    "key_encipherment",
-    "digital_signature",
-  ]
-
-  dns_names = [var.hostname]
-
-  subject {
-    common_name  = var.hostname
-    organization = "Arctiq (NonTrusted)"
-  }
 }
 
 resource "kubernetes_secret" "vault_tls" {

@@ -12,7 +12,6 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-
   kubernetes {
     load_config_file = "false"
     host             = google_container_cluster.kubernetes_cluster.endpoint

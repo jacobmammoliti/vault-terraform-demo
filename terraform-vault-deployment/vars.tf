@@ -59,3 +59,26 @@ variable "hostname" {
   type        = string
   description = "hostname for self-signed certificate"
 }
+
+variable "gcp_kms_project_id" {
+  type        = string
+  description = "define project id that GCP KMS will be deployed into"
+}
+
+variable "gcp_kms_region" {
+  type        = string
+  description = "define the GCP KMS region will be deployed into"
+  default     = "us-central1-a"
+}
+
+variable "gcp_kms_key_ring" {
+  type        = string
+  description = "the name of the GCP KMS key ring"
+  default     = "vault-key-ring"
+}
+
+variable "gcp_kms_crypto_key" {
+  type        = string
+  description = "the name of the GCP KMS crypto key"
+  default     = "vault-crypto-key"
+}
