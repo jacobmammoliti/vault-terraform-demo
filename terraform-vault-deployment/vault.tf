@@ -5,6 +5,7 @@ resource "kubernetes_namespace" "vault" {
 }
 
 resource "helm_release" "vault" {
+  depends_on = [google_kms_crypto_key.vault_crypto_key]
   name       = "vault"
   repository = "https://helm.releases.hashicorp.com/"
   chart      = "vault"
@@ -18,8 +19,8 @@ resource "helm_release" "vault" {
       tls_disable        = var.vault_tls_disable,
       gcp_kms_project_id = var.gcp_kms_project_id,
       gcp_kms_region     = var.gcp_kms_region,
-      gcp_kms_key_ring   = google_kms_key_ring.vault_key_ring.self_link,
-      gcp_kms_crypto_key = google_kms_crypto_key.vault_crypto_key.self_link
+      gcp_kms_key_ring   = var.gcp_kms_key_ring,
+      gcp_kms_crypto_key = var.gcp_kms_crypto_key
     })
   ]
 }
