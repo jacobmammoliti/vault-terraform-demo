@@ -5,7 +5,6 @@ resource "kubernetes_namespace" "vault" {
 }
 
 resource "helm_release" "vault" {
-  depends_on = [google_kms_crypto_key.vault_crypto_key]
   name       = "vault"
   repository = "https://helm.releases.hashicorp.com/"
   chart      = "vault"
