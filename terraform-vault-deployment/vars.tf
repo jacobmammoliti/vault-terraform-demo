@@ -62,6 +62,11 @@ variable "hostname" {
   description = "hostname for self-signed certificate"
 }
 
+variable "domain" {
+  type        = string
+  description = "domain for self-signed certificate"
+}
+
 variable "gcp_kms_project_id" {
   type        = string
   description = "define project id that GCP KMS will be deployed into"
