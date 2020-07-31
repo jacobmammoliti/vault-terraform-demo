@@ -15,7 +15,7 @@ resource "tls_self_signed_cert" "cert" {
     "digital_signature",
   ]
 
-  dns_names = [var.hostname]
+  dns_names = [var.domain]
 
   subject {
     common_name  = var.hostname

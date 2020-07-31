@@ -4,72 +4,17 @@
 This demo will show you how to install Vault on a Kubernetes cluster using the official Helm Chart from HashiCorp and then manage Vault's configuration through Terraform with the Vault provider.
 
 ## Standing up Kubernetes and Installing Vault
-The Terraform code in the `terraform-vault-deployment` directory stands up a GKE cluster in a Google project, installs Vault through the official [Helm chart](https://github.com/hashicorp/vault-helm), and prints out the IP address of the Vault UI service.
+The Terraform code in the `terraform-vault-deployment` directory stands up a GKE cluster in a Google project, installs Vault through the official [Helm chart](https://github.com/hashicorp/vault-helm).
 
-The following snippet shows an example of how this is done.
-```shell
-$ cd terraform-vault-deployment
-
-terraform-vault-deployment $ cat << EOF > terraform.tfvars
-cluster_name = "vault-cluster"
-project_id   = <project-id>
-EOF
-
-terraform-vault-deployment $ terraform apply
-data.google_client_config.default: Refreshing state...
-
-An execution plan has been generated and is shown below.
-Resource actions are indicated with the following symbols:
-  + create
- <= read (data resources)
-
-Terraform will perform the following actions:
-...
-
-Plan: 3 to add, 0 to change, 0 to destroy.
-
-Do you want to perform these actions?
-  Terraform will perform the actions described above.
-  Only 'yes' will be accepted to approve.
-
-  Enter a value: yes
-
-google_container_cluster.kubernetes_cluster: Creating...
-google_container_cluster.kubernetes_cluster: Still creating... [10s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [20s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [30s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [40s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [50s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [1m0s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [1m10s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [1m20s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [1m30s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [1m40s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [1m50s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [2m0s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [2m10s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [2m20s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [2m30s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [2m40s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [2m50s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [3m0s elapsed]
-google_container_cluster.kubernetes_cluster: Still creating... [3m10s elapsed]
-google_container_cluster.kubernetes_cluster: Creation complete after 3m12s [id=projects/blizzard-253119/locations/us-central1-a/clusters/vault-cluster]
-kubernetes_namespace.vault: Creating...
-kubernetes_namespace.vault: Creation complete after 0s [id=vault]
-helm_release.vault: Creating...
-helm_release.vault: Still creating... [10s elapsed]
-helm_release.vault: Still creating... [20s elapsed]
-helm_release.vault: Still creating... [30s elapsed]
-helm_release.vault: Still creating... [40s elapsed]
-helm_release.vault: Creation complete after 48s [id=vault]
-data.kubernetes_service.vault_svc: Refreshing state...
-
-Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-vault_address = http://<public-ip>:8200
+Example `terraform.tfvars`:
+```HCL
+cluster_name       = 'vault-cluster'
+project_id         = 'my-gcp-project-id'
+hostname           = 'vault'
+domain             = 'example.lab'
+gcp_kms_project_id = 'my-kms-project-id'
+gcp_kms_key_ring   = 'vault-key-ring'
+gcp_kms_crypto_key = 'vault-crypto-key'
 ```
 
 ## Initializing and Unsealing the Vault
@@ -78,65 +23,20 @@ When a Vault cluster is provisioned, it first needs to be initalized and unseale
 Below are the steps to initialize and unseal the vault.
 
 ```shell
-terraform-vault-deployment $ export VAULT_ADDR=http://<public-ip>:8200
-terraform-vault-deployment $ vault operator init
-Unseal Key 1: BI4moZsol5aWxJaGZY9MS/V2V7VrD3E8JpF+j9obIuqJ
-Unseal Key 2: IFE8IEy85dxJSljK2996h8hl8oo/TA0ezQdMJtqVZmGc
-Unseal Key 3: eZUo5j5bnTkXDVpy+FgMVIM6jCwOrI5g6aHbFEWxXC5U
-Unseal Key 4: WKEaGQVgP35yl57z7esgKFosExXAyr/3AZ6YPO9MpzH8
-Unseal Key 5: 8CbSC3Nw314btN8aN1nYzHWPYLrhm+hj2bB+iLYNUHz9
+$ gcloud container clusters get-credentials <gke-cluster-name> --zone <gke-cluster-location> --project <gcp-project-id>
 
-Initial Root Token: s.j0vuCJsL16RrsErxPjoiXKOc
+$ kubectl get pods -n vault
+NAME                                    READY   STATUS    RESTARTS   AGE
+vault-0                                 0/1     Running   0          3h49m
+vault-agent-injector-68c547d6d7-zsk92   1/1     Running   0          3h49m
 
-Vault initialized with 5 key shares and a key threshold of 3. Please securely
-distribute the key shares printed above. When the Vault is re-sealed,
-restarted, or stopped, you must supply at least 3 of these keys to unseal it
-before it can start servicing requests.
-
-Vault does not store the generated master key. Without at least 3 key to
-reconstruct the master key, Vault will remain permanently sealed!
-
-It is possible to generate new unseal keys, provided you have a quorum of
-existing unseal keys shares. See "vault operator rekey" for more information.
-
-terraform-vault-deployment $ vault operator unseal BI4moZsol5aWxJaGZY9MS/V2V7VrD3E8JpF+j9obIuqJ
-Key                Value
----                -----
-Seal Type          shamir
-Initialized        true
-Sealed             true
-Total Shares       5
-Threshold          3
-Unseal Progress    1/3
-Unseal Nonce       b7063581-df44-d14c-e783-079c59042e1f
-Version            1.3.1
-HA Enabled         false
-
-terraform-vault-deployment $ vault operator unseal IFE8IEy85dxJSljK2996h8hl8oo/TA0ezQdMJtqVZmGc
-Key                Value
----                -----
-Seal Type          shamir
-Initialized        true
-Sealed             true
-Total Shares       5
-Threshold          3
-Unseal Progress    2/3
-Unseal Nonce       b7063581-df44-d14c-e783-079c59042e1f
-Version            1.3.1
-HA Enabled         false
-
-terraform-vault-deployment $ vault operator unseal eZUo5j5bnTkXDVpy+FgMVIM6jCwOrI5g6aHbFEWxXC5U
-Key             Value
----             -----
-Seal Type       shamir
-Initialized     true
-Sealed          false
-Total Shares    5
-Threshold       3
-Version         1.3.1
-Cluster Name    vault-cluster-bcc8e10d
-Cluster ID      c6ad36a7-f55b-b7b5-7f7d-eaf16dcb38e5
-HA Enabled      false
+$ kubectl exec -it vault-0 -n vault /bin/sh
+/ $ vault operator init -recovery-shares=1 -recovery-threshold=1 # do not do 1 in production please
+Recovery Key 1: h4lwnpw+W2d9oIMM09PPHj56r58Iw/jDL9IWQDpNFag=
+Initial Root Token: s.jQ08x0bch7nYMGbTD7kmTWMH
+Success! Vault is initialized
+Recovery key initialized with 1 key shares and a key threshold of 1. Please
+securely distribute the key shares printed above.
 ```
 
 ## Configure Vault with Terraform
