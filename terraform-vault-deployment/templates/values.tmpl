@@ -1,6 +1,11 @@
 server:
+  image:
+    repository: ${vault_image_repository}
+    tag: ${vault_image_tag}
   dataStorage:
     enabled: true
+  auditStorage:
+    enabled: ${vault_enable_audit}
   ha:
     enabled: true
     replicas: ${replicas}

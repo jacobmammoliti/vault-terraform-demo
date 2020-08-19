@@ -49,7 +49,7 @@ variable "enable_vault_ui" {
 
 variable "vault_service_type" {
   description = "controls the type of Kubernetes service the Vault UI service gets"
-  default     = "LoadBalancer"
+  default     = "ClusterIP"
 }
 
 variable "vault_tls_disable" {
@@ -57,10 +57,15 @@ variable "vault_tls_disable" {
   default     = false
 }
 
-variable "hostname" {
+variable "primary_hostname" {
   type        = string
   description = "hostname for self-signed certificate"
 }
+
+# variable "secondary_hostname" {
+#   type        = string
+#   description = "hostname for self-signed certificate"
+# }
 
 variable "domain" {
   type        = string
@@ -86,4 +91,21 @@ variable "gcp_kms_key_ring" {
 variable "gcp_kms_crypto_key" {
   type        = string
   description = "the name of the GCP KMS crypto key"
+}
+
+variable "vault_image_repository" {
+  type        = string
+  description = "controls which repository to pull vault from"
+  default     = "vault"
+}
+
+variable "vault_image_tag" {
+  type        = string
+  description = "controls which image to use"
+  default     = "latest"
+}
+
+variable "vault_enable_audit" {
+  description = "controls the enablement audit storage"
+  default     = true
 }
