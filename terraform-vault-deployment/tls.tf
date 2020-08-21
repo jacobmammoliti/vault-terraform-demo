@@ -23,21 +23,23 @@ resource "tls_self_signed_cert" "primary_cert" {
   }
 }
 
-# resource "tls_self_signed_cert" "secondary_cert" {
-#   key_algorithm   = tls_private_key.cert.algorithm
-#   private_key_pem = tls_private_key.cert.private_key_pem
+resource "tls_self_signed_cert" "secondary_cert" {
+  count = var.deploy_secondary == true ? 1 : 0
 
-#   validity_period_hours = 12
+  key_algorithm   = tls_private_key.cert.algorithm
+  private_key_pem = tls_private_key.cert.private_key_pem
 
-#   allowed_uses = [
-#     "key_encipherment",
-#     "digital_signature",
-#   ]
+  validity_period_hours = 12
 
-#   dns_names = [var.domain]
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+  ]
 
-#   subject {
-#     common_name  = "${var.secondary_hostname}.${var.domain}"
-#     organization = "Arctiq (NonTrusted)"
-#   }
-# }
+  dns_names = [var.domain]
+
+  subject {
+    common_name  = "${var.secondary_hostname}.${var.domain}"
+    organization = "Arctiq (NonTrusted)"
+  }
+}

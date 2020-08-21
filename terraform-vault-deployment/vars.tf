@@ -60,12 +60,14 @@ variable "vault_tls_disable" {
 variable "primary_hostname" {
   type        = string
   description = "hostname for self-signed certificate"
+  default     = "vault-primary"
 }
 
-# variable "secondary_hostname" {
-#   type        = string
-#   description = "hostname for self-signed certificate"
-# }
+variable "secondary_hostname" {
+  type        = string
+  description = "hostname for self-signed certificate"
+  default     = "vault-secondary"
+}
 
 variable "domain" {
   type        = string
@@ -108,4 +110,10 @@ variable "vault_image_tag" {
 variable "vault_enable_audit" {
   description = "controls the enablement audit storage"
   default     = true
+}
+
+variable "deploy_secondary" {
+  type        = bool
+  description = "controls whether or not to deploy a second vault in a separate namespace"
+  default     = false
 }
