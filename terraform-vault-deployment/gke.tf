@@ -25,8 +25,8 @@ resource "google_container_cluster" "kubernetes_cluster" {
       disable-legacy-endpoints = "true"
     }
 
-    machine_type = var.machine_type
-    preemptible  = var.preemptible
+    machine_type    = var.machine_type
+    preemptible     = var.preemptible
     service_account = google_service_account.gke_service_account.email
   }
 }

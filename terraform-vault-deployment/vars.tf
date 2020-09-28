@@ -121,5 +121,5 @@ variable "deploy_secondary" {
 variable "gke_service_account_id" {
   type        = string
   description = "ID of the Service Account that GKE will use"
-  default    = "gke-vault"
+  default     = "gke-vault"
 }
