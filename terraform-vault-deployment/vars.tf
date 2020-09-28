@@ -117,3 +117,9 @@ variable "deploy_secondary" {
   description = "controls whether or not to deploy a second vault in a separate namespace"
   default     = false
 }
+
+variable "gke_service_account_id" {
+  type        = string
+  description = "ID of the Service Account that GKE will use"
+  default    = "gke-vault"
+}
