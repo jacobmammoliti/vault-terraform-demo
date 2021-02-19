@@ -4,9 +4,9 @@
 This demo will show you how to install Vault on a Kubernetes cluster using the official Helm Chart from HashiCorp and then manage Vault's configuration through Terraform with the Vault provider.
 
 ## Standing up Kubernetes and Installing Vault
-The Terraform code in the `terraform-vault-deployment` directory stands up a GKE cluster in a Google project, installs Vault through the official [Helm chart](https://github.com/hashicorp/vault-helm).
+The Terraform code in the `terraform-vault-deployment` directory stands up a GKE cluster and installs Vault through the official [Helm chart](https://github.com/hashicorp/vault-helm).
 
-> The Service Account the Kubernetes nodes must have the `cloudkms.cryptoKeyVersions.useToDecrypt` and `cloudkms.cryptoKeyVersions.useToEncrypt` permissions. The `Cloud KMS CryptoKey Encrypter/Decrypter` role can be attached. 
+> The Service Account the Kubernetes nodes must have the `cloudkms.cryptoKeyVersions.useToDecrypt` and `cloudkms.cryptoKeyVersions.useToEncrypt` permissions if using a KMS for autounseal. The `Cloud KMS CryptoKey Encrypter/Decrypter` role can be attached. 
 
 Example `terraform.tfvars`:
 ```HCL
