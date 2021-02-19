@@ -1,0 +1,72 @@
+server:
+  image:
+    repository: ${vault_image_repository}
+    tag: ${vault_image_tag}
+  dataStorage:
+    enabled: true
+  auditStorage:
+    enabled: ${vault_enable_audit}
+  ha:
+    enabled: true
+    replicas: ${replicas}
+    raft:
+      enabled: true
+      setNodeId: true
+
+      config: |
+        ui = ${vault_ui}
+
+        log_level = "Debug"
+        
+        listener "tcp" {
+          tls_disable        = ${tls_disable}
+          %{ if tls_disable == false }
+          tls_client_ca_file = "/vault/userconfig/tls/tls_ca"
+          tls_cert_file      = "/vault/userconfig/tls/tls_crt"
+          tls_key_file       = "/vault/userconfig/tls/tls_key"
+          %{ endif }
+          address         = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+
+          %{ for i in range(0, replicas) }
+          retry_join {
+            %{ if tls_disable == false }
+            leader_api_addr         = "https://vault-${i}.vault-internal:8200"
+            leader_ca_cert_file     = "/vault/userconfig/tls/tls_ca"
+            leader_client_cert_file = "/vault/userconfig/tls/tls_crt"
+            leader_client_key_file  = "/vault/userconfig/tls/tls_key"
+            %{ else }
+            leader_api_addr = "http://vault-${i}.vault-internal:8200"
+            %{ endif }
+          }
+          %{ endfor }
+        }
+
+        %{ if kms_key_ring != "" }
+        seal "gcpckms" {
+          project     = "${kms_project_id}"
+          region      = "${kms_region}"
+          key_ring    = "${kms_key_ring}"
+          crypto_key  = "${kms_crypto_key}"
+        }
+        %{ endif }
+
+        api_addr     = "[::]:8200"
+        cluster_addr = "[::]:8201"
+
+        service_registration "kubernetes" {}
+  %{ if tls_disable == false }
+  extraVolumes:
+    - type: secret
+      name: tls
+  extraEnvironmentVars:
+    VAULT_SKIP_VERIFY: true
+    VAULT_ADDR: https://127.0.0.1:8200
+  %{ endif }
+ui:
+  enabled: ${vault_ui}
+  serviceType: ${vault_service_type}
