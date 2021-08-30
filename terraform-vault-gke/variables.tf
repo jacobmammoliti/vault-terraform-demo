@@ -1,4 +1,4 @@
-variable "project" {
+variable "project_id" {
   type        = string
   description = "The project ID to host the cluster in (required)"
 }
@@ -38,6 +38,15 @@ variable "oauth_scopes" {
   description = "List containing node oauth scopes"
   default = [
     "https://www.googleapis.com/auth/cloud-platform"
+  ]
+}
+
+variable "google_service_account_iam_roles" {
+  type = list(string)
+
+  default = [
+    "roles/compute.viewer",
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   ]
 }
 

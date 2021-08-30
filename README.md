@@ -6,8 +6,6 @@ This demo will show you how to install Vault on a Kubernetes cluster using the o
 ## Standing up Kubernetes and Installing Vault
 The Terraform code in the `terraform-vault-deployment` directory stands up a GKE cluster and installs Vault through the official [Helm chart](https://github.com/hashicorp/vault-helm).
 
-> The Service Account the Kubernetes nodes must have the `cloudkms.cryptoKeyVersions.useToDecrypt` and `cloudkms.cryptoKeyVersions.useToEncrypt` permissions if using a KMS for autounseal. The `Cloud KMS CryptoKey Encrypter/Decrypter` role can be attached. 
-
 Example `terraform.tfvars`:
 ```HCL
 project            = "jacobmammoliti"
@@ -31,7 +29,7 @@ Vault initialized with 1 key shares and a key threshold of 1...
 
 # unseal each instance of Vault
 $ for i in 0 1 2; do
-  kubectl exec -it vault-0 -n vault -- vault operator unseal PgfBDMjWLqc+FVVY6+mXFT9kPOy/RUu9WEYS742jktw=
+  kubectl exec -it vault-${i} -n vault -- vault operator unseal PgfBDMjWLqc+FVVY6+mXFT9kPOy/RUu9WEYS742jktw=
 done
 
 # verify all pods are running

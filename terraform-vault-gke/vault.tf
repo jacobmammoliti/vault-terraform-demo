@@ -21,7 +21,7 @@ resource "helm_release" "vault" {
       tls_disable              = var.vault_tls_disable,
       vault_tls_secret_name    = kubernetes_secret.tls[0].metadata.0.name,
       vault_tls_ca_secret_name = kubernetes_secret.tls_ca[0].metadata.0.name,
-      kms_project_id           = var.project,
+      kms_project_id           = data.google_client_config.default.project,
       kms_region               = var.region,
       kms_key_ring             = var.kms_key_ring == null ? "" : var.kms_key_ring,
       kms_crypto_key           = var.kms_crypto_key == null ? "" : var.kms_crypto_key,

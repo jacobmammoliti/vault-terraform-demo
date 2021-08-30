@@ -1,3 +1,3 @@
 output "connect_string" {
-  value = "gcloud container clusters get-credentials ${var.cluster_name} --zone ${var.region}-${var.zone[0]} --project ${var.project}"
+  value = format("gcloud container clusters get-credentials %s --zone %s-%s --project %s", var.cluster_name, var.region, var.zone[0], var.project_id)
 }
