@@ -37,15 +37,14 @@ variable "oauth_scopes" {
   type        = list(string)
   description = "List containing node oauth scopes"
   default = [
-    "https://www.googleapis.com/auth/cloud-platform",
-    "https://www.googleapis.com/auth/cloudkms"
+    "https://www.googleapis.com/auth/cloud-platform"
   ]
 }
 
 variable "machine_type" {
   type        = string
   description = "The machine type to use for the cluster nodes"
-  default     = "n1-standard-1"
+  default     = "e2-small"
 }
 
 variable "preemptible" {
@@ -57,13 +56,13 @@ variable "preemptible" {
 variable "kms_key_ring" {
   type        = string
   description = "The name of the KMS key ring to use"
-  default     = ""
+  default     = null
 }
 
 variable "kms_crypto_key" {
   type        = string
   description = "The name of the KMS cryptographic key to use"
-  default     = ""
+  default     = null
 }
 
 variable "vault_ui" {

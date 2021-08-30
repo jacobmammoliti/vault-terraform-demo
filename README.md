@@ -10,7 +10,7 @@ The Terraform code in the `terraform-vault-deployment` directory stands up a GKE
 
 Example `terraform.tfvars`:
 ```HCL
-project            = "blizzard"
+project            = "jacobmammoliti"
 vault_tls_disable  = false
 vault_service_type = "LoadBalancer"
 ```
@@ -29,14 +29,10 @@ Initial Root Token: s.UvA9TZl4BC3VSjz2hn9PJJUG
 
 Vault initialized with 1 key shares and a key threshold of 1...
 
-# unseal the first Vault instance
-$ kubectl exec -it vault-0 -n vault -- vault operator unseal ...
-
-# unseal the second Vault instance
-$ kubectl exec -it vault-1 -n vault -- vault operator unseal ...
-
-# unseal the third Vault instance
-$ kubectl exec -it vault-2 -n vault -- vault operator unseal ...
+# unseal each instance of Vault
+$ for i in 0 1 2; do
+  kubectl exec -it vault-0 -n vault -- vault operator unseal PgfBDMjWLqc+FVVY6+mXFT9kPOy/RUu9WEYS742jktw=
+done
 
 # verify all pods are running
 $ kubectl get pods -n vault

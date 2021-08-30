@@ -1,14 +1,15 @@
+global:
+  tlsDisable: ${tls_disable}
 server:
   image:
     repository: ${vault_image_repository}
     tag: ${vault_image_tag}
-  dataStorage:
-    enabled: true
   auditStorage:
     enabled: ${vault_enable_audit}
   ha:
     enabled: true
     replicas: ${replicas}
+    apiAddr: "https://$(VAULT_K8S_POD_NAME).vault-internal"
     raft:
       enabled: true
       setNodeId: true
@@ -21,9 +22,8 @@ server:
         listener "tcp" {
           tls_disable        = ${tls_disable}
           %{ if tls_disable == false }
-          tls_client_ca_file = "/vault/userconfig/tls/tls_ca"
-          tls_cert_file      = "/vault/userconfig/tls/tls_crt"
-          tls_key_file       = "/vault/userconfig/tls/tls_key"
+          tls_cert_file      = "/vault/userconfig/tls/tls.crt"
+          tls_key_file       = "/vault/userconfig/tls/tls.key"
           %{ endif }
           address         = "[::]:8200"
           cluster_address = "[::]:8201"
@@ -32,18 +32,11 @@ server:
         storage "raft" {
           path = "/vault/data"
 
-          %{ for i in range(0, replicas) }
           retry_join {
-            %{ if tls_disable == false }
-            leader_api_addr         = "https://vault-${i}.vault-internal:8200"
-            leader_ca_cert_file     = "/vault/userconfig/tls/tls_ca"
-            leader_client_cert_file = "/vault/userconfig/tls/tls_crt"
-            leader_client_key_file  = "/vault/userconfig/tls/tls_key"
-            %{ else }
-            leader_api_addr = "http://vault-${i}.vault-internal:8200"
-            %{ endif }
+            auto_join = "provider=k8s namespace=${vault_namespace} label_selector=\"component=server,app.kubernetes.io/name=vault\""
+            leader_tls_servername = "HOSTNAME.vault-internal"
+            leader_ca_cert_file   = "/vault/userconfig/tls-ca/ca.crt"
           }
-          %{ endfor }
         }
 
         %{ if kms_key_ring != "" }
@@ -55,17 +48,16 @@ server:
         }
         %{ endif }
 
-        api_addr     = "[::]:8200"
-        cluster_addr = "[::]:8201"
-
         service_registration "kubernetes" {}
   %{ if tls_disable == false }
   extraVolumes:
     - type: secret
-      name: tls
+      name: ${vault_tls_secret_name}
+    - type: secret
+      name: ${vault_tls_ca_secret_name}
   extraEnvironmentVars:
-    VAULT_SKIP_VERIFY: true
-    VAULT_ADDR: https://127.0.0.1:8200
+    VAULT_CAPATH: /vault/userconfig/tls-ca/ca.crt
+    VAULT_ADDR: https://$(VAULT_K8S_POD_NAME).vault-internal:8200
   %{ endif }
 ui:
   enabled: ${vault_ui}

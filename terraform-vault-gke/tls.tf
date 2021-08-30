@@ -24,8 +24,8 @@ resource "tls_self_signed_cert" "ca" {
   ]
 
   subject {
-    organization = "Arctiq (NonTrusted)"
-    common_name  = "Arctiq (NonTrusted) Private Certificate Authority"
+    organization = "HashiCorp (NonTrusted)"
+    common_name  = "HashiCorp (NonTrusted) Private Certificate Authority"
     country      = "CA"
   }
 }
