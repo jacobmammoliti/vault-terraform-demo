@@ -50,6 +50,24 @@ variable "google_service_account_iam_roles" {
   ]
 }
 
+variable "google_workload_identity" {
+  type        = bool
+  description = "Use Workload Identity or not"
+  default     = false
+}
+
+variable "kubernetes_namespace" {
+  type        = string
+  description = "The name of Kubernetes namespace to deploy Vault into"
+  default     = "vault"
+}
+
+variable "kubernetes_sa_name" {
+  type        = string
+  description = "The name of the Kubernetes Service Account that Vault will use"
+  default     = "vault-sa"
+}
+
 variable "machine_type" {
   type        = string
   description = "The machine type to use for the cluster nodes"
@@ -62,6 +80,23 @@ variable "preemptible" {
   default     = true
 }
 
+variable "helm_chart_name" {
+  type        = string
+  description = "Name of the Helm chart deployment"
+  default     = "vault"
+}
+
+variable "kms_region" {
+  type        = string
+  description = "The region the KMS key ring is in"
+  default     = null
+}
+
+variable "kms_project_id" {
+  type        = string
+  description = "The project ID the KMS key ring is in"
+  default     = null
+}
 variable "kms_key_ring" {
   type        = string
   description = "The name of the KMS key ring to use"
@@ -89,13 +124,7 @@ variable "vault_service_type" {
 variable "vault_tls_disable" {
   type        = bool
   description = "Disable TLS for Vault"
-  default     = true
-}
-
-variable "vault_common_name" {
-  type        = string
-  description = "Common name (CN) for self-signed certificate"
-  default     = "vault.local"
+  default     = false
 }
 
 variable "vault_image_repository" {

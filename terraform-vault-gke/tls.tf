@@ -47,11 +47,11 @@ resource "tls_cert_request" "vault_cert_request" {
   key_algorithm   = tls_private_key.vault_private_key[0].algorithm
   private_key_pem = tls_private_key.vault_private_key[0].private_key_pem
 
-  dns_names = [for i in range(var.node_count) : "vault-${i}.vault-internal"]
+  dns_names = [for i in range(var.node_count) : format("vault-%s.%s-internal", i, var.helm_chart_name)]
 
   subject {
-    common_name  = var.vault_common_name
-    organization = "Vault Private Certificate"
+    common_name  = "HashiCorp Vault Certificate"
+    organization = "HashiCorp Vault Certificate"
   }
 }
 

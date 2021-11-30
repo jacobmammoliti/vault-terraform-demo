@@ -6,10 +6,17 @@ server:
     tag: ${vault_image_tag}
   auditStorage:
     enabled: ${vault_enable_audit}
+  serviceAccount:
+    create: false
+    name: ${vault_service_account_name}
   ha:
     enabled: true
     replicas: ${replicas}
-    apiAddr: "https://$(VAULT_K8S_POD_NAME).vault-internal"
+    %{ if tls_disable == false }
+    apiAddr: "https://$(VAULT_K8S_POD_NAME).${vault_full_name}"
+    %{ else }
+    apiAddr: "http://$(VAULT_K8S_POD_NAME).${vault_full_name}"
+    %{ endif }
     raft:
       enabled: true
       setNodeId: true
@@ -33,19 +40,23 @@ server:
           path = "/vault/data"
 
           retry_join {
-            auto_join = "provider=k8s namespace=${vault_namespace} label_selector=\"component=server,app.kubernetes.io/name=vault\""
-            leader_tls_servername = "HOSTNAME.vault-internal"
+            auto_join             = "provider=k8s namespace=${vault_namespace} label_selector=\"component=server,app.kubernetes.io/name=vault\""
+            leader_tls_servername = "HOSTNAME.${vault_full_name}"
+            %{ if tls_disable == false }
             leader_ca_cert_file   = "/vault/userconfig/tls-ca/ca.crt"
+            %{ endif }
           }
         }
 
-        %{ if kms_key_ring != "" }
+        %{ if kms_key_ring != "" || kms_key_ring != "" }
         seal "gcpckms" {
-          project     = "${kms_project_id}"
-          region      = "${kms_region}"
-          key_ring    = "${kms_key_ring}"
-          crypto_key  = "${kms_crypto_key}"
+          project    = "${kms_project_id}"
+          region     = "${kms_region}"
+          key_ring   = "${kms_key_ring}"
+          crypto_key = "${kms_crypto_key}"
         }
+        %{ else }
+        seal "shamir" {}
         %{ endif }
 
         service_registration "kubernetes" {}
@@ -57,7 +68,7 @@ server:
       name: ${vault_tls_ca_secret_name}
   extraEnvironmentVars:
     VAULT_CAPATH: /vault/userconfig/tls-ca/ca.crt
-    VAULT_ADDR: https://$(VAULT_K8S_POD_NAME).vault-internal:8200
+    VAULT_ADDR: https://$(VAULT_K8S_POD_NAME).${vault_full_name}:8200
   %{ endif }
 ui:
   enabled: ${vault_ui}

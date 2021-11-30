@@ -3,7 +3,7 @@ provider "google" {
 }
 
 provider "kubernetes" {
-  host  = google_container_cluster.vault.endpoint
+  host  = format("https://%s", google_container_cluster.vault.endpoint)
   token = data.google_client_config.default.access_token
 
   cluster_ca_certificate = base64decode(
@@ -13,7 +13,7 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes {
-    host  = google_container_cluster.vault.endpoint
+    host  = format("https://%s", google_container_cluster.vault.endpoint)
     token = data.google_client_config.default.access_token
 
     cluster_ca_certificate = base64decode(
