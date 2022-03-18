@@ -4,13 +4,11 @@
 This demo will show you how to install Vault on a Kubernetes cluster using the official Helm Chart from HashiCorp and then manage Vault's configuration through Terraform with the Vault provider.
 
 ## Standing up Kubernetes and Installing Vault
-The Terraform code in the `terraform-vault-deployment` directory stands up a GKE cluster and installs Vault through the official [Helm chart](https://github.com/hashicorp/vault-helm).
+The Terraform code in the `terraform-vault-deployment` directory stands up a GKE cluster and deploys Vault with the official [Helm chart](https://github.com/hashicorp/vault-helm).
 
-Example `terraform.tfvars`:
-```HCL
-project            = "jacobmammoliti"
-vault_tls_disable  = false
-vault_service_type = "LoadBalancer"
+Configure any needed variables in `terraform.tfvars` and then build the cluster:
+```bash
+terraform apply -var-file=terraform.tfvars
 ```
 
 ## Initializing and Unsealing Vault

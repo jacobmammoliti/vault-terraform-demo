@@ -1,6 +1,4 @@
-provider "google" {
-  project = var.project_id
-}
+provider "google" {}
 
 provider "kubernetes" {
   host  = format("https://%s", google_container_cluster.vault.endpoint)

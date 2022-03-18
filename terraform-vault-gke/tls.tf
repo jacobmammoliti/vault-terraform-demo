@@ -2,7 +2,7 @@
 # Certificate Authority
 #------------------------------------------------------------------------------
 resource "tls_private_key" "ca" {
-  count = var.vault_tls_disable ? 0 : 1
+  count = local.generate_tls_certs ? 1 : 0
 
   algorithm   = "RSA"
   ecdsa_curve = "P384"
@@ -10,7 +10,7 @@ resource "tls_private_key" "ca" {
 }
 
 resource "tls_self_signed_cert" "ca" {
-  count = var.vault_tls_disable ? 0 : 1
+  count = local.generate_tls_certs ? 1 : 0
 
   key_algorithm         = tls_private_key.ca[0].algorithm
   private_key_pem       = tls_private_key.ca[0].private_key_pem
@@ -34,7 +34,7 @@ resource "tls_self_signed_cert" "ca" {
 # Certificate
 #------------------------------------------------------------------------------
 resource "tls_private_key" "vault_private_key" {
-  count = var.vault_tls_disable ? 0 : 1
+  count = local.generate_tls_certs ? 1 : 0
 
   algorithm   = "RSA"
   ecdsa_curve = "P384"
@@ -42,12 +42,12 @@ resource "tls_private_key" "vault_private_key" {
 }
 
 resource "tls_cert_request" "vault_cert_request" {
-  count = var.vault_tls_disable ? 0 : 1
+  count = local.generate_tls_certs ? 1 : 0
 
   key_algorithm   = tls_private_key.vault_private_key[0].algorithm
   private_key_pem = tls_private_key.vault_private_key[0].private_key_pem
 
-  dns_names = [for i in range(var.node_count) : format("vault-%s.%s-internal", i, var.helm_chart_name)]
+  dns_names = [for i in range(var.gke_node_count) : format("vault-%s.%s-internal", i, var.helm_chart_name)]
 
   subject {
     common_name  = "HashiCorp Vault Certificate"
@@ -55,8 +55,8 @@ resource "tls_cert_request" "vault_cert_request" {
   }
 }
 
-resource "tls_locally_signed_cert" "vault_certificate" {
-  count = var.vault_tls_disable ? 0 : 1
+resource "tls_locally_signed_cert" "vault_signed_certificate" {
+  count = local.generate_tls_certs ? 1 : 0
 
   cert_request_pem   = tls_cert_request.vault_cert_request[0].cert_request_pem
   ca_key_algorithm   = tls_private_key.ca[0].algorithm
