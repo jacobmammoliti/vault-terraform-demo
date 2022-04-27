@@ -7,6 +7,10 @@ vault_seal_method            = "gcpckms"
 vault_leader_tls_servername  = "vault.hashicorp.com"
 use_google_workload_identity = true
 
+vault_image_repository = "hashicorp/vault-enterprise"
+vault_image_tag = "1.10-ent"
+vault_license = "license"
+
 vault_kms_seal_config = {
   "GOOGLE_PROJECT"                = "accelerator-gcp-vault-ci-001"
   "GOOGLE_REGION"                 = "northamerica-northeast2"

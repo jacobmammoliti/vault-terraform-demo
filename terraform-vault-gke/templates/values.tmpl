@@ -29,7 +29,7 @@ server:
   ha:
     enabled: true
     replicas: ${vault_replica_count}
-    apiAddr: "https://$(VAULT_K8S_POD_NAME).${helm_release_name}-internal"
+    apiAddr: "https://$(VAULT_K8S_POD_NAME).${helm_release_name}-internal:8200"
     raft:
       enabled: true
       setNodeId: true
